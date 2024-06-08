@@ -1,2 +1,3 @@
-# Mono_extention_docs
-Documentation for monogame extention and engine(in the future)
+# Docs engine
+
+Simple docs engine not to think about it too much during the development but have it regardless. Written in Golang 
