@@ -1,0 +1,21 @@
+/* Default style of the project - visuals */
+
+/* Hat part */
+
+.HatStructElement {
+  border-bottom: black 1px solid;
+}
+
+/* Nav part */
+
+.NavMenuVisualElement {
+  border-right: black 1px solid;
+  gap: 1;
+}
+
+/* Content part */
+
+.ContentMenuVisualElement {
+  color: inherit;
+  padding: 10px;
+}

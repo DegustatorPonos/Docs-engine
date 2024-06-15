@@ -1,0 +1,53 @@
+/* Main structure of the project  - logic */
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+.BodyAligner {
+  display: flex;
+  display: column;
+}
+
+
+.HatVisualElement {
+  flex-grow: 1;
+} 
+
+.MainAligner {
+  flex-grow: 10;
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+}
+
+/* Nav part */
+
+.NavMenuStructElement {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  height: 100%;
+}
+
+
+/* Content part */
+
+.ContentMenuStructElement {
+  flex-grow: 10;
+}
+
+/* Common */
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  min-height: 100%;
+}
+
+
+
