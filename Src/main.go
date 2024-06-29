@@ -15,10 +15,15 @@ func main() {
 
 func GetDirectory(writer http.ResponseWriter, request *http.Request) {
 	fmt.Printf("Directory requested\n")
-
-	absPath, _ := filepath.Abs("../Content")
+	//I truly despise CORS with passion
+	writer.Header().Set("Access-Control-Allow-Origin", "*")
+	writer.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	var requestedPath = request.URL.Query().Get("path")
+	absPath, _ := filepath.Abs("../Content/" + requestedPath)
 	fmt.Fprint(writer, ReadDirectory(absPath))
 }
+
+//================== DIRECTORY MANAGER ==================
 
 // Recursive function to read directoory content and
 // the content of all included directories
@@ -30,19 +35,20 @@ func ReadDirectory(path string) string {
 	if err != nil {
 		return ""
 	}
-	fmt.Fprint(&builder, "(")
 	var isFirst = true
 	//Read the directory
 	for _, e := range content {
+		//TODO: Get rid of this flag and do it some better way i don't know about yet
 		if !isFirst {
 			fmt.Fprint(&builder, ";")
 		}
-		fmt.Fprint(&builder, e.Name())
-		if e.IsDir() {
-			fmt.Fprint(&builder, ReadDirectory(path+"/"+e.Name()))
+
+		if !e.IsDir() {
+			fmt.Fprint(&builder, strings.Replace(e.Name(), ".md", " -f", 1))
+		} else {
+			fmt.Fprint(&builder, e.Name()+" -d")
 		}
 		isFirst = false
 	}
-	fmt.Fprint(&builder, ")")
 	return builder.String()
 }

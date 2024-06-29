@@ -1,35 +1,50 @@
 <!DOCTYPE HTML>
 <html>
-    <link href="main.css" rel="stylesheet" />
-    <link href="defaultStyle.css" rel="stylesheet" />
-    <link href="override.css" rel="stylesheet" />
-    <script href="IndexScipt.js"></script> 
+<!--
+    In order to avoid any further legal issues with JQuerry team (I love you guys)
+    I don't want to include the library in the project. 
+    If you need to (for whatever reason) deplaoy this on the offline machine
+    download it yourself and include it where google CDI's version is
+    -->
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<link href="main.css" rel="stylesheet" />
+<link href="defaultStyle.css" rel="stylesheet" />
+<link href="override.css" rel="stylesheet" />
+<script src="Directories.js"></script>
+<script src="IndexScipt.js"></script>
+
 <head>
-</head> 
+</head>
 
 <body>
     <header class="HatStructElement HatSctructOverride HatVisualElement HatVisualOverride">
-        <img src="logo.png" width="64" height="64" >
-        
-        <h1 class="HeadText HeadTextOverride"> Head text </h1>    
+        <img src="logo.png" width="64" height="64">
+
+        <h1 class="HeadText HeadTextOverride"> Head text </h1>
     </header>
-    <main class="MainAligner MainAlignerOverride" > 
-        <nav  class="NavMenuStructElement NavMenuSctructOverride NavMenuVisualElement NavMenuVisualOverride">
+    <main class="MainAligner MainAlignerOverride">
+        <nav class="NavMenuStructElement NavMenuSctructOverride NavMenuVisualElement NavMenuVisualOverride">
             <p> HeadElement </p>
             <p> HeadElement </p>
             <p> HeadElement </p>
             <p> HeadElement </p>
         </nav>
 
-        <div class="ContentMenuStructElement ContentMenuSctructOverride ContentMenuVisualElement ContentMenuVisualOverride">
-                <p> Content </p>
-                <div class="CodeElement CodeElementOverride">
-                    <p>code content</p>
-                    <p>dwd</p>
-                </div>
+        <div
+            class="ContentMenuStructElement ContentMenuSctructOverride ContentMenuVisualElement ContentMenuVisualOverride">
+            <p> Content </p>
+            <div class="CodeElement CodeElementOverride">
+                <p>code content</p>
+                <p>dwd</p>
+            </div>
         </div>
     </main>
 </body>
-
+<script>
+    $(document).ready(function () {
+        Init();
+    });
+</script>
 
 </html>
