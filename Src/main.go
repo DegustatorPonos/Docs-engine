@@ -2,19 +2,11 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
 )
-
-func ReadConfigFile() []byte {
-	content, err := os.ReadFile("Config.cfg")
-	if err != nil {
-		log.Fatal(err)
-	}
-	return content
-}
 
 func main() {
 	http.HandleFunc("/GetDirectories", GetDirectory)
@@ -22,16 +14,35 @@ func main() {
 }
 
 func GetDirectory(writer http.ResponseWriter, request *http.Request) {
-	fmt.Printf("Directory requested")
+	fmt.Printf("Directory requested\n")
 
 	absPath, _ := filepath.Abs("../Content")
+	fmt.Fprint(writer, ReadDirectory(absPath))
+}
 
-	content, err := os.ReadDir(absPath)
+// Recursive function to read directoory content and
+// the content of all included directories
+func ReadDirectory(path string) string {
+	var builder strings.Builder
+
+	content, err := os.ReadDir(path)
+	//If something went wrong it's more reliable to return nothing IMO
 	if err != nil {
-		log.Fatal(err)
+		return ""
 	}
+	fmt.Fprint(&builder, "(")
+	var isFirst = true
+	//Read the directory
 	for _, e := range content {
-		fmt.Fprint(writer, e.Name()+" ")
+		if !isFirst {
+			fmt.Fprint(&builder, ";")
+		}
+		fmt.Fprint(&builder, e.Name())
+		if e.IsDir() {
+			fmt.Fprint(&builder, ReadDirectory(path+"/"+e.Name()))
+		}
+		isFirst = false
 	}
-
+	fmt.Fprint(&builder, ")")
+	return builder.String()
 }
