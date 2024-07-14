@@ -16,6 +16,14 @@
   padding-left: 10px;
 }
 
+.FileElement {
+  cursor: pointer;
+}
+
+.DirectoryElement {
+  cursor: pointer;
+}
+
 /* Content part */
 
 .ContentMenuVisualElement {

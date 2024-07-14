@@ -17,4 +17,9 @@ async function GetString(uri) {
     return output;
 }
 
+//Occurs when the element on the side panel is selected
+async function GoToPage(route) {
+    console.log(route);
+}
+
 
