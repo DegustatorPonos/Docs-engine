@@ -42,7 +42,8 @@ func ReadDirectory(path string) string {
 		if !isFirst {
 			fmt.Fprint(&builder, ";")
 		}
-
+		
+		//Output type separation
 		if !e.IsDir() {
 			fmt.Fprint(&builder, strings.Replace(e.Name(), ".md", " -f", 1))
 		} else {

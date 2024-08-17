@@ -1,14 +1,55 @@
- function UpdateStructure() {
+const directoriesDictionanry = {};
+
+async function UpdateStructure() {
     panel = document.getElementById("NavPanel");
-    GetString("GetDirectories").then(resp => {
-        let parsedResponce = ParseDirectory('', resp);
-        console.log(parsedResponce)
-    }); 
-    
-    
-    //AddDir(parsedResponce, panel);
-    ;  
+
+	 //Goofy ahh synchronization method
+	await GetDirectoriesArray('/').then(_ => {
+		console.log(directoriesDictionanry);
+	console.log(directoriesDictionanry["/Decoration/"]);
+	
+	});
+	DrawTree('/');
 }
+
+
+//Fills up global dictionary variable recursively
+async function GetDirectoriesArray(rootDir) {
+	let currentDirs = '';
+	await GetString("GetDirectories?path=" + rootDir).then(result => {
+		currentDirs = result;
+	});
+	directoriesDictionanry[rootDir] = currentDirs;
+	currentDirs.split(';').forEach(async el => {
+		//Recursion
+		if(el.includes(' -d')) {
+			await GetDirectoriesArray(rootDir+el.replace(' -d', '')+'/');
+		}
+	});
+}
+
+
+//Sync recursive function to draw a dir tree
+function DrawTree(baseDir) {
+	console.log("Keys = " + Object.keys(directoriesDictionanry)[1]);
+	console.log('Requested listing "' + baseDir + '"');
+	let contents = directoriesDictionanry[baseDir];
+	console.log('Got from dict ' + contents);
+	contents.split(';').forEach(el => {
+		if(el.includes(' -f')) {
+			AddFile(new File(el.replace(' -f', ''), baseDir));
+		}
+
+		if(el.includes(' -d')) {
+			AddDir(new Directory(el.replace(' -d', ''), baseDir));
+			DrawTree(baseDir + el.replace(' -d', '') + '/');
+		}
+	});
+	console.log('Content > ' + contents);	
+}
+
+
+//=========Page update==========
 
 //Adds file to the view
 function AddFile(file) {
@@ -30,32 +71,6 @@ function AddDir(dir) {
     nav.appendChild(displayElement);
 }
 
-//Recursive function to retuern a file directory structure
-function ParseDirectory(rootPath, content) {
-    let returnArray = content.split(';');
-    let outputArray = [];
-    returnArray.forEach(element => {
-        if(element.includes(' -f')) {
-            //File parsing
-            element = element.replace(" -f", "");
-            outputFile = new File(element, rootPath);
-            outputArray.push(outputFile);
-            AddFile(outputFile);
-        }
-        else if(element.includes(' -d')) {
-            //Directory parsing
-            element = element.replace(" -d", "");
-            let dirPath = rootPath + "/" + element;
-
-            //Somehow it makes it somehow synchronious
-            GetString("GetDirectories?path=" + dirPath).then(result => {
-                AddDir(new Directory(element, dirPath));
-                outputArray.push(ParseDirectory(dirPath, result));
-            }).then(i => { return; });
-        }
-    });
-    
-}
 
 //==========CLASSES============
 class File {
