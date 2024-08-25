@@ -1,6 +1,7 @@
 package main
 
 import (
+	"PaketikDocsEngine/config"
 	"fmt"
 	"net/http"
 	"os"
@@ -9,8 +10,11 @@ import (
 )
 
 func main() {
+	// Parsing a config file
+	config.ReadConfigFile()
+	fmt.Println("Listener opened on port " + config.GetPort("5000"))
 	http.HandleFunc("/GetDirectories", GetDirectory)
-	http.ListenAndServe(":5000", nil)
+	http.ListenAndServe(":"+config.GetPort("5000"), nil)
 }
 
 func GetDirectory(writer http.ResponseWriter, request *http.Request) {
@@ -42,7 +46,7 @@ func ReadDirectory(path string) string {
 		if !isFirst {
 			fmt.Fprint(&builder, ";")
 		}
-		
+
 		//Output type separation
 		if !e.IsDir() {
 			fmt.Fprint(&builder, strings.Replace(e.Name(), ".md", " -f", 1))
