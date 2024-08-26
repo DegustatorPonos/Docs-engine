@@ -1,1 +1,6 @@
-Ovverride styles - main.css < overrideStyles.css
+Override styles - main.css < overrideStyles.css
+ParsingMode in config file:
+    - 0: Basic, parisng on request - slow
+    - 1: Gradial, splits the article in parts and returns user transition Id, ammount of parts and a cancellation token.
+        Then frontend requests all the parts separatly and then sends a cancellation token dback to server to delete the recorded parts from memory
+    - 3: Preprocessing the general html tags map on the first reqest and then uses it it quickly generate HTML code from markdown file 
