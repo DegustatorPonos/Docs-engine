@@ -1,8 +1,9 @@
 package main
 
 import (
+	parser "PaketikDocsEngine/ContentDisplays"
+	directories "PaketikDocsEngine/DirectoriesControllers"
 	"PaketikDocsEngine/config"
-	"PaketikDocsEngine/directories"
 	"fmt"
 	"net/http"
 )
@@ -12,5 +13,6 @@ func main() {
 	config.ReadConfigFile()
 	fmt.Println("Listener opened on port " + config.GetPort("5000"))
 	http.HandleFunc("/GetDirectories", directories.GetDirectory)
+	http.HandleFunc("/ReadFile", parser.GetFile)
 	http.ListenAndServe(":"+config.GetPort("5000"), nil)
 }
