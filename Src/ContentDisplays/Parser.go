@@ -6,7 +6,7 @@ import (
 	"os"
 )
 
-func GetFile(writer http.ResponseWriter, request *http.Request) {
+func ReadFile(writer http.ResponseWriter, request *http.Request) {
 	filepath := request.URL.Query().Get("path")
 	fmt.Printf("Parsing file" + "\n")
 	//I truly despise CORS with passion
@@ -18,4 +18,5 @@ func GetFile(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 	fmt.Fprint(writer, string(contents))
+
 }
