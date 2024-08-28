@@ -1,21 +1,32 @@
 const directoriesDictionanry = {};
 
+let mutex = 0;
+
 async function UpdateStructure() {
     panel = document.getElementById("NavPanel");
-
 	 //Goofy ahh synchronization method
-	await GetDirectoriesArray('/').then(_ => {
-		console.log(directoriesDictionanry);
-	console.log(directoriesDictionanry["/Decoration/"]);
-	
+	await GetDirectoriesArray('/')
+	let mutexPromise = new Promise((resolve) => { 
+			setInterval(() => {
+				if(mutex == 0) {
+					resolve(""); 
+					return;
+				}
+			}, 1);
 	});
-	DrawTree('/');
+	await mutexPromise.then(() => { 
+		console.log(directoriesDictionanry);
+		console.log(directoriesDictionanry["/Decoration/"]);
+		DrawTree('/');
+		});
 }
 
 
 //Fills up global dictionary variable recursively
 async function GetDirectoriesArray(rootDir) {
 	let currentDirs = '';
+	mutex += 1;
+	console.log("Mutex: " + mutex);
 	await GetString("GetDirectories?path=" + rootDir).then(result => {
 		currentDirs = result;
 	});
@@ -26,6 +37,8 @@ async function GetDirectoriesArray(rootDir) {
 			await GetDirectoriesArray(rootDir+el.replace(' -d', '')+'/');
 		}
 	});
+	mutex -= 1;
+	console.log("Mutex -" + mutex)
 }
 
 

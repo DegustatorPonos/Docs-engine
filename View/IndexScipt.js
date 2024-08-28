@@ -12,7 +12,9 @@ async function Init() {
 
 async function GetString(uri) {
     let responce = await fetch(baseAddress + "/" + uri);
-    let output = await responce.text();
+    let output = await responce.text().then(outp => {
+	return outp;
+    });
     //console.log(output); LOGGING 
     return output;
 }
