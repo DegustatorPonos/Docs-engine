@@ -3,22 +3,15 @@ const directoriesDictionanry = {};
 let mutex = 0;
 
 async function UpdateStructure() {
-    panel = document.getElementById("NavPanel");
-	 //Goofy ahh synchronization method
+	panel = document.getElementById("NavPanel");
+	//Goofy ahh synchronization method
 	await GetDirectoriesArray('/')
 	let mutexPromise = new Promise((resolve) => { 
-			setInterval(() => {
-				if(mutex == 0) {
-					resolve(""); 
-					return;
-				}
-			}, 1);
+		setInterval(() => { if(mutex == 0) { resolve(""); return; } }, 1);
 	});
 	await mutexPromise.then(() => { 
-		console.log(directoriesDictionanry);
-		console.log(directoriesDictionanry["/Decoration/"]);
 		DrawTree('/');
-		});
+	});
 }
 
 
@@ -26,7 +19,6 @@ async function UpdateStructure() {
 async function GetDirectoriesArray(rootDir) {
 	let currentDirs = '';
 	mutex += 1;
-	console.log("Mutex: " + mutex);
 	await GetString("GetDirectories?path=" + rootDir).then(result => {
 		currentDirs = result;
 	});
@@ -38,16 +30,12 @@ async function GetDirectoriesArray(rootDir) {
 		}
 	});
 	mutex -= 1;
-	console.log("Mutex -" + mutex)
 }
 
 
 //Sync recursive function to draw a dir tree
 function DrawTree(baseDir) {
-	console.log("Keys = " + Object.keys(directoriesDictionanry)[1]);
-	console.log('Requested listing "' + baseDir + '"');
 	let contents = directoriesDictionanry[baseDir];
-	console.log('Got from dict ' + contents);
 	contents.split(';').forEach(el => {
 		if(el.includes(' -f')) {
 			AddFile(new File(el.replace(' -f', ''), baseDir));
@@ -58,7 +46,6 @@ function DrawTree(baseDir) {
 			DrawTree(baseDir + el.replace(' -d', '') + '/');
 		}
 	});
-	console.log('Content > ' + contents);	
 }
 
 
@@ -70,7 +57,8 @@ function AddFile(file) {
     displayElement.innerHTML = "| " + file.name ;
     displayElement.className = "FileElement FileElementOverride";
     //We redirect 
-    displayElement.id = file.path + "/" + file.name + ".md";
+    displayElement.id = file.path + file.name + ".md";
+	displayElement.onclick = function () { GoToPage(this) };
     let nav = document.getElementById('NavPanel');
     nav.appendChild(displayElement);
 }
@@ -80,6 +68,7 @@ function AddDir(dir) {
     if(dir == undefined) return;
     let displayElement = document.createElement("p");
     displayElement.innerHTML = dir.name + " dir";
+    displayElement.className = "DirectoryElement DirectoryElementOverride";
     let nav = document.getElementById('NavPanel');
     nav.appendChild(displayElement);
 }

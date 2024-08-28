@@ -32,6 +32,10 @@
   height: 100%;
 }
 
+.DirectoryElement, .FileElement {
+	user-select: none;
+	cursor: pointer;
+}
 
 /* Content part */
 

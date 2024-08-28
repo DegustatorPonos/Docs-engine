@@ -20,8 +20,8 @@ async function GetString(uri) {
 }
 
 //Occurs when the element on the side panel is selected
-async function GoToPage(route) {
-    console.log(route);
+async function GoToPage(node) {
+    console.log(node.id);
 }
 
 
