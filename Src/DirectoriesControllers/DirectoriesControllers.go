@@ -1,6 +1,7 @@
 package directories
 
 import (
+	"PaketikDocsEngine/config"
 	"fmt"
 	"net/http"
 	"os"
@@ -14,7 +15,7 @@ func GetDirectory(writer http.ResponseWriter, request *http.Request) {
 	writer.Header().Set("Access-Control-Allow-Origin", "*")
 	writer.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 	var requestedPath = request.URL.Query().Get("path")
-	absPath, _ := filepath.Abs("../Content/" + requestedPath)
+	absPath, _ := filepath.Abs(config.GetSourceDirectoryPath("../Content/") + requestedPath)
 	fmt.Fprint(writer, ReadDirectory(absPath))
 }
 

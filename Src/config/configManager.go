@@ -29,7 +29,7 @@ func EnsureConfigFileCreated() {
 		if err != nil {
 			fmt.Println("Error while creating config file")
 		}
-		fmt.Fprint(file, "Port: 5000 \n ParsingMode: 0")
+		fmt.Fprint(file, "Port: 5000\nParsingMode: 0\nSource: ../Content/")
 	}
 }
 
@@ -58,4 +58,9 @@ func GetParsingMode(defaultMode int) int {
 		return defaultMode
 	}
 	return mode
+}
+
+// Returns path of the directory thet contains .md files
+func GetSourceDirectoryPath(defaultPath string) string {
+	return GetConfigParam("Source", defaultPath)
 }
