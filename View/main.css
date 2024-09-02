@@ -43,6 +43,10 @@
   flex-grow: 10;
 }
 
+.CodeElement {
+  white-space: pre-wrap;
+}
+
 /* Common */
 
 html,

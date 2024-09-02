@@ -18,6 +18,7 @@ func main() {
 
 	// Enabling configured parsing mode
 	mode := config.GetParsingMode(0)
+	parser.InitializeDict()
 	fmt.Println("Selected parsing mode: " + strconv.Itoa(mode))
 	switch mode {
 	case 0: // Basic aka simple
@@ -31,7 +32,7 @@ func main() {
 
 	port := ":" + config.GetPort("5000")
 	fmt.Println(port)
-	if servererror := http.ListenAndServe(port, nil); !errors.Is(servererror, os.ErrClosed) {
+	if servererror := http.ListenAndServe(":5000", nil); !errors.Is(servererror, os.ErrClosed) {
 		panic(servererror)
 	}
 }

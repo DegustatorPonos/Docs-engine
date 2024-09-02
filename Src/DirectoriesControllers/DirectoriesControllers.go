@@ -24,7 +24,6 @@ func GetDirectory(writer http.ResponseWriter, request *http.Request) {
 // Recursive function to read directory content
 func ReadDirectory(path string) string {
 	var builder strings.Builder
-
 	content, err := os.ReadDir(path)
 	//If something went wrong it's more reliable to return nothing IMO
 	if err != nil {

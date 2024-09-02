@@ -21,5 +21,6 @@ async function GetString(uri) {
 
 //Occurs when the element on the side panel is selected
 async function GoToPage(node) {
-	await DisplayContent(node.Id);
+    console.log(node);
+	await DisplayContent(node.id);
 }

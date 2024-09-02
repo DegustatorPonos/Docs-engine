@@ -3,6 +3,7 @@ const directoriesDictionanry = {};
 let mutex = 0;
 
 async function UpdateStructure() {
+	console.log("Es");
 	panel = document.getElementById("NavPanel");
 	//Goofy ahh synchronization method
 	await GetDirectoriesArray('/')
@@ -47,7 +48,6 @@ function DrawTree(baseDir) {
 		}
 	});
 }
-
 
 //=========Page update==========
 
