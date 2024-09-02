@@ -32,8 +32,12 @@ function PushElemenetsOnDisplay(elements) {
 
 // Clears all elemets that are children of the given element
 function ClearChildren(parentElement) {
+	try {
 	let els = parentElement.children;
-	for(let i = 0; i <= els.length; i++) {
+	while(els.length != 0) {
 		parentElement.removeChild(els[0]); // Thats fucked up honestly
+	}
+	} catch (ex) {
+		console.log(ex)
 	}
 }
