@@ -13,13 +13,13 @@ type Chunk struct {
 
 const (
 	Text int = 0
-	Code
-	H1
-	H2
-	H3
-	H4
-	H5
-	H6
+	Code int = 1
+	H1 int = 2
+	H2 int = 3
+	H3 int = 4
+	H4 int = 5
+	H5 int = 6
+	H6 int = 7
 )
 
 // A dictionary of opening and closing tags of elements
@@ -50,4 +50,14 @@ func InitializeDict() {
 	TagsDict[H4] = Chunk{"<h4>", "</h4>"}
 	TagsDict[H5] = Chunk{"<h5>", "</h5>"}
 	TagsDict[H6] = Chunk{"<h6>", "</h6>"}
+}
+
+func TransformString(input string, globalTag int) string {
+	modeTags := TagsDict[globalTag]
+	outp := ""
+	outp += modeTags.openingTag
+	outp += input
+	outp += modeTags.closingTag
+
+	return outp
 }

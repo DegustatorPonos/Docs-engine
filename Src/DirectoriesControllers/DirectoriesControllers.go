@@ -10,7 +10,7 @@ import (
 )
 
 func GetDirectory(writer http.ResponseWriter, request *http.Request) {
-	fmt.Printf("Directory requested\n")
+	// fmt.Printf("Directory requested\n")
 	//I truly despise CORS with passion
 	writer.Header().Set("Access-Control-Allow-Origin", "*")
 	writer.Header().Set("Access-Control-Allow-Headers", "Content-Type")

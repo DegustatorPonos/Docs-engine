@@ -62,5 +62,10 @@ func GetParsingMode(defaultMode int) int {
 
 // Returns path of the directory thet contains .md files
 func GetSourceDirectoryPath(defaultPath string) string {
-	return GetConfigParam("Source ", defaultPath)
+	return GetConfigParam("Source", defaultPath)
+}
+
+// Returns teh name of the app
+func GetAppName(defaultPath string) string {
+	return GetConfigParam("Appname", defaultPath)
 }
