@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"strings"
 )
 
 type Chunk struct {
@@ -52,22 +53,34 @@ func InitializeDict() {
 	TagsDict[H6] = Chunk{"<h6>", "</h6>"}
 }
 
-func TransformString(input string, globalTag int) string {
+// Gets the string HTML tags and transforms spectial sumbols to HTML equivalents
+func TransformString(input string, globalTag int, includeClosingTag bool, includeOpeningTag bool) string {
+	var correctedInput string = input
+	correctedInput = strings.ReplaceAll(correctedInput, "<", "&lt")
+	correctedInput = strings.ReplaceAll(correctedInput, ">", "&gt")
+
 	modeTags := TagsDict[globalTag]
 	outp := ""
-	outp += modeTags.openingTag
-	outp += input
-	outp += modeTags.closingTag
+	if (includeOpeningTag) {
+		outp += modeTags.openingTag
+	}
+	outp += correctedInput
+
+	if (includeClosingTag) {
+		outp += modeTags.closingTag
+	}
 	return outp
 }
 
-// =============================== Mode chacges =============================== 
+// =============================== Mode changes =============================== 
 
 // Sets the mode to the current one and modifies the string if needed. Returns true if we need to incude this line
 func SetMode(previousString string, currentString *string, nextString string, contextMode *int) bool {
+	// Checking for the block code
 	if(CheckForCodeBlock(*currentString, contextMode)) {
 		return false
 	}
+
 	return true
 }
 

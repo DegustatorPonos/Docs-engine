@@ -1,6 +1,6 @@
 ``` 
 Code block
-Code with<br>a br tag
+Code with <br> an HTML tag
 wdafsreh
 ```
 text block

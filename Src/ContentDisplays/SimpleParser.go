@@ -25,7 +25,7 @@ func SimpleParse(writer http.ResponseWriter, request *http.Request) {
 
 	// The type of content the string represents
 	var globalMode int = Text 
-	// var bufMode int = Text
+	var bufMode int = Text
 
 	// Going through the file's strings
 	for index, el := range FileStrings {
@@ -34,9 +34,12 @@ func SimpleParse(writer http.ResponseWriter, request *http.Request) {
 		if(len(outp) == 0 || index == -1) {
 			continue;
 		}
-		// For explanation check the defenition of SetMoee() function
+		bufMode = globalMode
+		if(bufMode != -1) { // It doesnt build without it
+		}
+		// For explanation check the defenition of SetMode() function
 		if(SetMode(prevString, &outp, "", &globalMode)) {
-			fmt.Fprintln(writer, TransformString((string)(outp), globalMode))
+			fmt.Fprintln(writer, TransformString((string)(outp), globalMode, true, true))
 		}
 	}
 }
