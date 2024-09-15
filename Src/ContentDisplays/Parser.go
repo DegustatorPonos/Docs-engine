@@ -58,6 +58,29 @@ func TransformString(input string, globalTag int) string {
 	outp += modeTags.openingTag
 	outp += input
 	outp += modeTags.closingTag
-
 	return outp
+}
+
+// =============================== Mode chacges =============================== 
+
+// Sets the mode to the current one and modifies the string if needed. Returns true if we need to incude this line
+func SetMode(previousString string, currentString *string, nextString string, contextMode *int) bool {
+	if(CheckForCodeBlock(*currentString, contextMode)) {
+		return false
+	}
+	return true
+}
+
+// By specs the code block is defined by tripple backticks (```) that are not included.
+// This function sets the mode value and returns true if the line is a code block identifier
+func CheckForCodeBlock(currentString string, contextMode *int) bool {
+	if(currentString == "```") {
+		if(*contextMode != Code) {
+			*contextMode = Code
+		} else {
+			*contextMode = Text
+		}
+		return true 
+	}
+	return false
 }
