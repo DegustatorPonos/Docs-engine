@@ -25,7 +25,7 @@ func SimpleParse(writer http.ResponseWriter, request *http.Request) {
 
 	// The type of content the string represents
 	var globalMode int = Text 
-	var bufMode int = Text
+	var bufMode int = -1 // Set it to -1 so the first opening tag will be open
 
 	// Going through the file's strings
 	for index, el := range FileStrings {
@@ -34,12 +34,16 @@ func SimpleParse(writer http.ResponseWriter, request *http.Request) {
 		if(len(outp) == 0 || index == -1) {
 			continue;
 		}
-		bufMode = globalMode
-		if(bufMode != -1) { // It doesnt build without it
-		}
-		// For explanation check the defenition of SetMode() function
 		if(SetMode(prevString, &outp, "", &globalMode)) {
-			fmt.Fprintln(writer, TransformString((string)(outp), globalMode, true, true))
+			fmt.Printf("Difference between %v and %v\n", globalMode, bufMode)
+			if(bufMode != globalMode) {
+				if(bufMode != -1) {
+					fmt.Fprint(writer, TagsDict[bufMode].closingTag) // Closing last section
+				}
+				fmt.Fprint(writer, TagsDict[globalMode].openingTag) // Opening new tag
+				bufMode = globalMode
+			}
+			fmt.Fprint(writer, TransformString((string)(outp), globalMode, false, false))
 		}
 	}
 }

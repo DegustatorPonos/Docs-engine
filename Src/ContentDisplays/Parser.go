@@ -65,7 +65,7 @@ func TransformString(input string, globalTag int, includeClosingTag bool, includ
 		outp += modeTags.openingTag
 	}
 	outp += correctedInput
-
+	outp += "<br>"
 	if (includeClosingTag) {
 		outp += modeTags.closingTag
 	}
