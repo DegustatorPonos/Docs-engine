@@ -55,6 +55,9 @@ func InitializeDict() {
 
 // Gets the string HTML tags and transforms spectial sumbols to HTML equivalents
 func TransformString(input string, globalTag int, includeClosingTag bool, includeOpeningTag bool) string {
+	if(len(input) == 0) {
+		return "<br>"
+	}
 	var correctedInput string = input
 	correctedInput = strings.ReplaceAll(correctedInput, "<", "&lt")
 	correctedInput = strings.ReplaceAll(correctedInput, ">", "&gt")
@@ -76,9 +79,14 @@ func TransformString(input string, globalTag int, includeClosingTag bool, includ
 
 // Sets the mode to the current one and modifies the string if needed. Returns true if we need to incude this line
 func SetMode(previousString string, currentString *string, nextString string, contextMode *int) bool {
-	// Checking for the block code
+	// Checking for the code block
 	if(CheckForCodeBlock(*currentString, contextMode)) {
 		return false
+	}
+
+	// Checking for the  
+	if(CheckForHeaderBlock(&currentString, nextString, contextMode)) {
+		return true
 	}
 
 	return true
@@ -97,3 +105,29 @@ func CheckForCodeBlock(currentString string, contextMode *int) bool {
 	}
 	return false
 }
+
+// By specs the header block can be defined by two ways:
+// First - '#' symbols before the string. The ammount of strings is the depth. Max 6
+// Second - strings that only contains === for H1 and --- for H2. Low priority impl
+// This function sets the mode value and returns true if the line is a header block identifier
+ func CheckForHeaderBlock(currentString **string, nextString string, contextMode *int) bool { 
+	var builder strings.Builder
+	var depth int = 0
+	for i := range 6 {
+		builder.WriteRune('#')
+		if(strings.HasPrefix(**currentString, builder.String())) {
+			fmt.Println(builder.String())
+			fmt.Println(i)
+			depth = i + 1
+		} else {
+			break
+		}
+	}
+	if(depth == 0) {
+		return false
+	} else {
+		*contextMode = (H1 - 1 + depth )
+		**currentString = strings.TrimLeft(**currentString, "#")
+		return true
+	}
+ }

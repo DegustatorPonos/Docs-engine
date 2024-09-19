@@ -31,11 +31,12 @@ func SimpleParse(writer http.ResponseWriter, request *http.Request) {
 	for index, el := range FileStrings {
 		var prevString = "<Null>"
 		outp := strings.Trim(strings.ReplaceAll(el, "\n", ""), " ") 
-		if(len(outp) == 0 || index == -1) {
+		// if(len(outp) == 0 || index == -1) {
+		if(index == -1) {
 			continue;
 		}
 		if(SetMode(prevString, &outp, "", &globalMode)) {
-			fmt.Printf("Difference between %v and %v\n", globalMode, bufMode)
+			// fmt.Printf("Difference between %v and %v\n", globalMode, bufMode)
 			if(bufMode != globalMode) {
 				if(bufMode != -1) {
 					fmt.Fprint(writer, TagsDict[bufMode].closingTag) // Closing last section
