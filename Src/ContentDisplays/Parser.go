@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"slices"
 	"strings"
 )
 
@@ -21,6 +22,7 @@ const (
 	H4 int = 5
 	H5 int = 6
 	H6 int = 7
+	Quote int = 8
 )
 
 // A dictionary of opening and closing tags of elements
@@ -51,6 +53,7 @@ func InitializeDict() {
 	TagsDict[H4] = Chunk{"<h4>", "</h4>"}
 	TagsDict[H5] = Chunk{"<h5>", "</h5>"}
 	TagsDict[H6] = Chunk{"<h6>", "</h6>"}
+	TagsDict[Quote] = Chunk{"<div class=\"\" style=\"color: red;\">", "</div>"}
 }
 
 // Gets the string HTML tags and transforms spectial sumbols to HTML equivalents
@@ -88,6 +91,11 @@ func SetMode(previousString string, currentString *string, nextString string, co
 	if(CheckForHeaderBlock(&currentString, nextString, contextMode)) {
 		return true
 	}
+	
+	// Checking for the quote 
+	if(CheckForQuoteBlock(&currentString, contextMode)) {
+		return true
+	}
 
 	return true
 }
@@ -115,15 +123,17 @@ func CheckForCodeBlock(currentString string, contextMode *int) bool {
 	var depth int = 0
 	for i := range 6 {
 		builder.WriteRune('#')
+		// If the string contains this depth's prefix
 		if(strings.HasPrefix(**currentString, builder.String())) {
-			fmt.Println(builder.String())
-			fmt.Println(i)
 			depth = i + 1
 		} else {
 			break
 		}
 	}
 	if(depth == 0) {
+		if(slices.Contains([]int{H1, H2, H3, H4, H5, H6}, *contextMode)) {
+			*contextMode = Text
+		}
 		return false
 	} else {
 		*contextMode = (H1 - 1 + depth )
@@ -131,3 +141,18 @@ func CheckForCodeBlock(currentString string, contextMode *int) bool {
 		return true
 	}
  }
+
+// By specs quote is set by placing '>' symbol before the string
+// This function sets the mode value and returns true if the line is a quote block identifier
+func CheckForQuoteBlock(currentString **string, contextMode *int) bool { 
+	if(strings.HasPrefix(**currentString, "> ")) {
+		**currentString = strings.TrimLeft(**currentString, "> ")
+		*contextMode = Quote
+		return true
+	} else {
+		if(*contextMode == Quote) {
+			*contextMode = Text
+		}
+	}
+	return false
+}

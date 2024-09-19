@@ -31,8 +31,7 @@ func SimpleParse(writer http.ResponseWriter, request *http.Request) {
 	for index, el := range FileStrings {
 		var prevString = "<Null>"
 		outp := strings.Trim(strings.ReplaceAll(el, "\n", ""), " ") 
-		// if(len(outp) == 0 || index == -1) {
-		if(index == -1) {
+		if(index == -1) { // It doesnt build without it
 			continue;
 		}
 		if(SetMode(prevString, &outp, "", &globalMode)) {
