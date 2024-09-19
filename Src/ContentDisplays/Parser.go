@@ -43,6 +43,14 @@ func ReadFile(writer http.ResponseWriter, request *http.Request) {
 	fmt.Fprint(writer, string(contents))
 }
 
+// Checks wheather it is secure to read this file or not
+func isPathSecure(path string) bool {
+	if(strings.Contains(path, "..")) {
+		return false
+	}
+	return true
+}
+
 // Initializes the TagsDict. Probably full of magical strings. And it looks scary.
 func InitializeDict() {
 	TagsDict[Text] = Chunk{"<p>", "</p>"}
@@ -53,7 +61,7 @@ func InitializeDict() {
 	TagsDict[H4] = Chunk{"<h4>", "</h4>"}
 	TagsDict[H5] = Chunk{"<h5>", "</h5>"}
 	TagsDict[H6] = Chunk{"<h6>", "</h6>"}
-	TagsDict[Quote] = Chunk{"<div class=\"\" style=\"color: red;\">", "</div>"}
+	TagsDict[Quote] = Chunk{"<div class=\"QuoteElement QuoteElementOverride\">", "</div>"}
 }
 
 // Gets the string HTML tags and transforms spectial sumbols to HTML equivalents

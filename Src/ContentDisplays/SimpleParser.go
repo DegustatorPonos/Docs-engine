@@ -15,6 +15,9 @@ func SimpleParse(writer http.ResponseWriter, request *http.Request) {
 
 	// File reading
 	filepath := request.URL.Query().Get("path")
+	if(!isPathSecure(filepath)) {
+		return;
+	}
 	content, err := os.ReadFile(config.GetSourceDirectoryPath("../Content/") + filepath)
 	if err != nil {
 		fmt.Fprint(writer, "Error while reading the file. \nError: "+err.Error())
