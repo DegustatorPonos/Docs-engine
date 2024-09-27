@@ -1,9 +1,6 @@
 package parser
 
 import (
-	"fmt"
-	"net/http"
-	"os"
 	"slices"
 	"strings"
 )
@@ -15,6 +12,7 @@ type Chunk struct {
 
 const (
 	Text int = 0
+	Quote int = 8
 	Code int = 1
 	H1 int = 2
 	H2 int = 3
@@ -22,34 +20,16 @@ const (
 	H4 int = 5
 	H5 int = 6
 	H6 int = 7
-	Quote int = 8
+	// Table contents 
+	TableHeader int = 10
+	TableBody int = 11
+	TableGeneral int = 12
+	TableRecord int = 13
+	TableCell int = 14
 )
 
 // A dictionary of opening and closing tags of elements
 var TagsDict = map[int]Chunk{}
-
-// Reads the file specified py 'path' query param
-func ReadFile(writer http.ResponseWriter, request *http.Request) {
-	filepath := request.URL.Query().Get("path")
-	fmt.Printf("Parsing file" + "\n")
-	//I truly despise CORS with passion
-	writer.Header().Set("Access-Control-Allow-Origin", "*")
-	writer.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-	contents, err := os.ReadFile("../Content/" + filepath)
-	if err != nil {
-		fmt.Fprint(writer, "There is nod such file as "+filepath)
-		return
-	}
-	fmt.Fprint(writer, string(contents))
-}
-
-// Checks wheather it is secure to read this file or not
-func isPathSecure(path string) bool {
-	if(strings.Contains(path, "..")) {
-		return false
-	}
-	return true
-}
 
 // Initializes the TagsDict. Probably full of magical strings. And it looks scary.
 func InitializeDict() {
@@ -62,8 +42,21 @@ func InitializeDict() {
 	TagsDict[H5] = Chunk{"<h5>", "</h5>"}
 	TagsDict[H6] = Chunk{"<h6>", "</h6>"}
 	TagsDict[Quote] = Chunk{"<div class=\"QuoteElement QuoteElementOverride\">", "</div>"}
+	// Table elemeb=nts 
+	TagsDict[TableGeneral] = Chunk{"<table>", "</table>"} // TODO: add style classes
+	TagsDict[TableHeader] = Chunk{"<thead>", "</thead>"}
+	TagsDict[TableBody] = Chunk{"<tbody>", "</tbody>"}
+	TagsDict[TableRecord] = Chunk{"<tr>", "</tr>"}
+	TagsDict[TableCell] = Chunk{"<td>", "</td>"}
 }
 
+// Checks wheather it is secure to read this file or not
+func isPathSecure(path string) bool {
+	if(strings.Contains(path, "..")) {
+		return false
+	}
+	return true
+}
 // Gets the string HTML tags and transforms spectial sumbols to HTML equivalents
 func TransformString(input string, globalTag int, includeClosingTag bool, includeOpeningTag bool) string {
 	if(len(input) == 0) {
@@ -90,6 +83,11 @@ func TransformString(input string, globalTag int, includeClosingTag bool, includ
 
 // Sets the mode to the current one and modifies the string if needed. Returns true if we need to incude this line
 func SetMode(previousString string, currentString *string, nextString string, contextMode *int) bool {
+	// Checking for the comment
+	if(CheckForCommentBlock(*currentString)) {
+		return false
+	}
+
 	// Checking for the code block
 	if(CheckForCodeBlock(*currentString, contextMode)) {
 		return false
@@ -99,7 +97,7 @@ func SetMode(previousString string, currentString *string, nextString string, co
 	if(CheckForHeaderBlock(&currentString, nextString, contextMode)) {
 		return true
 	}
-	
+
 	// Checking for the quote 
 	if(CheckForQuoteBlock(&currentString, contextMode)) {
 		return true
@@ -126,7 +124,7 @@ func CheckForCodeBlock(currentString string, contextMode *int) bool {
 // First - '#' symbols before the string. The ammount of strings is the depth. Max 6
 // Second - strings that only contains === for H1 and --- for H2. Low priority impl
 // This function sets the mode value and returns true if the line is a header block identifier
- func CheckForHeaderBlock(currentString **string, nextString string, contextMode *int) bool { 
+func CheckForHeaderBlock(currentString **string, nextString string, contextMode *int) bool { 
 	var builder strings.Builder
 	var depth int = 0
 	for i := range 6 {
@@ -148,7 +146,7 @@ func CheckForCodeBlock(currentString string, contextMode *int) bool {
 		**currentString = strings.TrimLeft(**currentString, "#")
 		return true
 	}
- }
+}
 
 // By specs quote is set by placing '>' symbol before the string
 // This function sets the mode value and returns true if the line is a quote block identifier
@@ -161,6 +159,37 @@ func CheckForQuoteBlock(currentString **string, contextMode *int) bool {
 		if(*contextMode == Quote) {
 			*contextMode = Text
 		}
+	}
+	return false
+}
+
+// by specs comment is set by placing text between '<!--' and '-->' blocks
+// this function sets the returns true if the line is a comment 
+func CheckForCommentBlock(currentString string) bool { 
+	if(strings.HasPrefix(currentString, "<!-- ") && strings.HasSuffix(currentString, " -->")) {
+		return true
+	}
+	return false
+}
+
+// by specs separator is set as ''
+// this function sets the returns true if the line is a comment 
+//  func CheckForSeparartor(currentString string) bool {
+//  } // TODO
+
+
+// TODO: Writh the table conditions here
+// https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/organizing-information-with-tables 
+func CheckForTable(currentString **string, contextMode *int) bool {
+	if(strings.HasPrefix(**currentString, "|") && strings.HasSuffix(**currentString, "|")) {
+		// If we reach this part of code then we are in the table	
+	} else {
+		if(*contextMode == TableHeader || *contextMode == TableBody) {
+			//If there is no more table signs we quit it
+			*contextMode = Text
+			// TODO: Rewrite this abomination
+			**currentString = TagsDict[*contextMode].closingTag + "\n" + TagsDict[TableGeneral].closingTag + "\n" + **currentString
+		} 
 	}
 	return false
 }

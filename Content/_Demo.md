@@ -9,7 +9,8 @@
 Text block
 
 > Quote block
- 
+<!-- Comment block (should not be visible) -->
+
 ``` 
 code block
 code with <br> an html tag
