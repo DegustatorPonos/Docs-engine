@@ -16,3 +16,7 @@ code block
 code with <br> an html tag
 wdafsreh
 ```
+
+|table|element|
+|-----|---|
+|dawdw|dwaddv|

@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"fmt"
 	"slices"
 	"strings"
 )
@@ -21,11 +22,9 @@ const (
 	H5 int = 6
 	H6 int = 7
 	// Table contents 
-	TableHeader int = 10
-	TableBody int = 11
-	TableGeneral int = 12
-	TableRecord int = 13
-	TableCell int = 14
+	TableGeneral int = 10
+	TableRecord int = 11
+	TableCell int = 12
 )
 
 // A dictionary of opening and closing tags of elements
@@ -42,10 +41,8 @@ func InitializeDict() {
 	TagsDict[H5] = Chunk{"<h5>", "</h5>"}
 	TagsDict[H6] = Chunk{"<h6>", "</h6>"}
 	TagsDict[Quote] = Chunk{"<div class=\"QuoteElement QuoteElementOverride\">", "</div>"}
-	// Table elemeb=nts 
+	// Table elements 
 	TagsDict[TableGeneral] = Chunk{"<table>", "</table>"} // TODO: add style classes
-	TagsDict[TableHeader] = Chunk{"<thead>", "</thead>"}
-	TagsDict[TableBody] = Chunk{"<tbody>", "</tbody>"}
 	TagsDict[TableRecord] = Chunk{"<tr>", "</tr>"}
 	TagsDict[TableCell] = Chunk{"<td>", "</td>"}
 }
@@ -57,6 +54,7 @@ func isPathSecure(path string) bool {
 	}
 	return true
 }
+
 // Gets the string HTML tags and transforms spectial sumbols to HTML equivalents
 func TransformString(input string, globalTag int, includeClosingTag bool, includeOpeningTag bool) string {
 	if(len(input) == 0) {
@@ -65,7 +63,6 @@ func TransformString(input string, globalTag int, includeClosingTag bool, includ
 	var correctedInput string = input
 	correctedInput = strings.ReplaceAll(correctedInput, "<", "&lt")
 	correctedInput = strings.ReplaceAll(correctedInput, ">", "&gt")
-
 	modeTags := TagsDict[globalTag]
 	outp := ""
 	if (includeOpeningTag) {
@@ -74,7 +71,7 @@ func TransformString(input string, globalTag int, includeClosingTag bool, includ
 	outp += correctedInput
 	outp += "<br>"
 	if (includeClosingTag) {
-		outp += modeTags.closingTag
+	// 	outp += modeTags.closingTag
 	}
 	return outp
 }
@@ -93,13 +90,18 @@ func SetMode(previousString string, currentString *string, nextString string, co
 		return false
 	}
 
-	// Checking for the  
+	// Checking for the header
 	if(CheckForHeaderBlock(&currentString, nextString, contextMode)) {
 		return true
 	}
 
 	// Checking for the quote 
 	if(CheckForQuoteBlock(&currentString, contextMode)) {
+		return true
+	}
+
+	// Checking for the table
+	if(CheckForTable(&currentString, contextMode)) {
 		return true
 	}
 
@@ -177,19 +179,39 @@ func CheckForCommentBlock(currentString string) bool {
 //  func CheckForSeparartor(currentString string) bool {
 //  } // TODO
 
-
-// TODO: Writh the table conditions here
+// TODO: Write the table conditions here
 // https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/organizing-information-with-tables 
 func CheckForTable(currentString **string, contextMode *int) bool {
 	if(strings.HasPrefix(**currentString, "|") && strings.HasSuffix(**currentString, "|")) {
 		// If we reach this part of code then we are in the table	
+		if(*contextMode != TableGeneral) {
+			fmt.Println("Table opening")
+			*contextMode = TableGeneral
+		} else {
+			fmt.Println("Table body")
+		}
+		return true
 	} else {
-		if(*contextMode == TableHeader || *contextMode == TableBody) {
-			//If there is no more table signs we quit it
+		if(*contextMode == TableGeneral) {
 			*contextMode = Text
-			// TODO: Rewrite this abomination
-			**currentString = TagsDict[*contextMode].closingTag + "\n" + TagsDict[TableGeneral].closingTag + "\n" + **currentString
-		} 
+		}
 	}
 	return false
+}
+
+// Parses the string by '|' symbols and transforms it as HTML
+// table record (<tr>)
+func StringToTableRecord(rawString string) string {
+	var builder strings.Builder
+	builder.WriteString(TagsDict[TableRecord].openingTag)
+	for _, cell := range strings.Split(rawString, "|") {
+		if(len(cell) == 0) {
+			continue
+		}
+		builder.WriteString(TagsDict[TableCell].openingTag)
+		builder.WriteString(cell)
+		builder.WriteString(TagsDict[TableCell].openingTag)
+	}
+	builder.WriteString(TagsDict[TableRecord].closingTag)
+	return builder.String()
 }

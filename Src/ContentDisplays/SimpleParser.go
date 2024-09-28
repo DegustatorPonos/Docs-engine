@@ -38,15 +38,17 @@ func SimpleParse(writer http.ResponseWriter, request *http.Request) {
 			continue;
 		}
 		if(SetMode(prevString, &outp, "", &globalMode)) {
-			// fmt.Printf("Difference between %v and %v\n", globalMode, bufMode)
 			if(bufMode != globalMode) {
+				fmt.Printf("Difference between %v and %v\n", globalMode, bufMode)
 				if(bufMode != -1) {
 					fmt.Fprint(writer, TagsDict[bufMode].closingTag) // Closing last section
 				}
 				fmt.Fprint(writer, TagsDict[globalMode].openingTag) // Opening new tag
 				bufMode = globalMode
 			}
+			// fmt.Println(globalMode)
 			fmt.Fprint(writer, TransformString((string)(outp), globalMode, false, false))
 		}
 	}
+	fmt.Println("Done")
 }
