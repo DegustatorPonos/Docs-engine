@@ -13,7 +13,6 @@ type Chunk struct {
 
 const (
 	Text int = 0
-	Quote int = 8
 	Code int = 1
 	H1 int = 2
 	H2 int = 3
@@ -21,6 +20,8 @@ const (
 	H4 int = 5
 	H5 int = 6
 	H6 int = 7
+	Quote int = 8
+	SepLine int = 9
 	// Table contents 
 	TableGeneral int = 10
 	TableRecord int = 11
@@ -40,11 +41,12 @@ func InitializeDict() {
 	TagsDict[H4] = Chunk{"<h4>", "</h4>"}
 	TagsDict[H5] = Chunk{"<h5>", "</h5>"}
 	TagsDict[H6] = Chunk{"<h6>", "</h6>"}
+	TagsDict[SepLine] = Chunk{"<hr>", ""}
 	TagsDict[Quote] = Chunk{"<div class=\"QuoteElement QuoteElementOverride\">", "</div>"}
 	// Table elements 
-	TagsDict[TableGeneral] = Chunk{"<table>", "</table>"} // TODO: add style classes
-	TagsDict[TableRecord] = Chunk{"<tr>", "</tr>"}
-	TagsDict[TableCell] = Chunk{"<td>", "</td>"}
+	TagsDict[TableGeneral] = Chunk{"<table class=\"TableElement TableElementOverride\">", "</table>"} // TODO: add style classes
+	TagsDict[TableRecord] = Chunk{"<tr class=\"TableRecordElement TableRecordElementOverride\">", "</tr>"}
+	TagsDict[TableCell] = Chunk{"<td class=\"TableCellElement TableCellElementOverride\">", "</td>"}
 }
 
 // Checks wheather it is secure to read this file or not
@@ -63,6 +65,10 @@ func TransformString(input string, globalTag int, includeClosingTag bool, includ
 	var correctedInput string = input
 	correctedInput = strings.ReplaceAll(correctedInput, "<", "&lt")
 	correctedInput = strings.ReplaceAll(correctedInput, ">", "&gt")
+	// TODO: Find a better way to do it
+	if(globalTag == TableGeneral) {
+		return StringToTableRecord(correctedInput)
+	}
 	modeTags := TagsDict[globalTag]
 	outp := ""
 	if (includeOpeningTag) {
@@ -174,10 +180,16 @@ func CheckForCommentBlock(currentString string) bool {
 	return false
 }
 
-// by specs separator is set as ''
+// by specs separator is set as '---'
 // this function sets the returns true if the line is a comment 
-//  func CheckForSeparartor(currentString string) bool {
-//  } // TODO
+// !IMPORTANT - if i remember correctly this only should apply in hiding list.
+// I might or might not be speculating but still
+func CheckForSeparartor(currentString string) bool {
+	if(len(strings.Trim(currentString, "-")) == 0) {
+		return true
+	}
+	return false
+} // TODO
 
 // TODO: Write the table conditions here
 // https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/organizing-information-with-tables 
@@ -185,10 +197,8 @@ func CheckForTable(currentString **string, contextMode *int) bool {
 	if(strings.HasPrefix(**currentString, "|") && strings.HasSuffix(**currentString, "|")) {
 		// If we reach this part of code then we are in the table	
 		if(*contextMode != TableGeneral) {
-			fmt.Println("Table opening")
 			*contextMode = TableGeneral
 		} else {
-			fmt.Println("Table body")
 		}
 		return true
 	} else {
@@ -204,13 +214,14 @@ func CheckForTable(currentString **string, contextMode *int) bool {
 func StringToTableRecord(rawString string) string {
 	var builder strings.Builder
 	builder.WriteString(TagsDict[TableRecord].openingTag)
-	for _, cell := range strings.Split(rawString, "|") {
+	for i, cell := range strings.Split(rawString, "|") {
 		if(len(cell) == 0) {
 			continue
 		}
 		builder.WriteString(TagsDict[TableCell].openingTag)
+		fmt.Println(i, " - '", cell, "' - ", len(cell) )
 		builder.WriteString(cell)
-		builder.WriteString(TagsDict[TableCell].openingTag)
+		builder.WriteString(TagsDict[TableCell].closingTag)
 	}
 	builder.WriteString(TagsDict[TableRecord].closingTag)
 	return builder.String()

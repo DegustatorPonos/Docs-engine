@@ -3,35 +3,35 @@
 /* Hat part */
 
 .HatStructElement {
-  border-bottom: black 1px solid;
-  background-color: #f3f3f3;
+	border-bottom: black 1px solid;
+	background-color: #f3f3f3;
 }
 
 /* Nav part */
 
 .NavMenuVisualElement {
-  border-right: black 1px solid;
-  gap: 1;
-  background-color: #f3f3f3;
-  padding-left: 10px;
+	border-right: black 1px solid;
+	gap: 1;
+	background-color: #f3f3f3;
+	padding-left: 10px;
 }
 
 /* Content part */
 
 .ContentMenuVisualElement {
-  color: inherit;
-  padding: 10px;
-  background-color: #f3f3f3;
+	color: inherit;
+	padding: 10px;
+	background-color: #f3f3f3;
 }
 
 .CodeElement {
-  border: 1px black solid;
-  border-radius: 5px;
-  margin: 5px;
-  padding: 5px;
-  background-color: #1F1F1F;
-  color: #CCCCCC;
-  font-family: 'Courier New', Courier, monospace;
+	border: 1px black solid;
+	border-radius: 5px;
+	margin: 5px;
+	padding: 5px;
+	background-color: #1F1F1F;
+	color: #CCCCCC;
+	font-family: 'Courier New', Courier, monospace;
 } 
 
 .QuoteElement {
@@ -41,6 +41,19 @@
 }
 
 .HeadText {
-  scale: 10px;
-  text-decoration: solid;
+	scale: 10px;
+	text-decoration: solid;
+}
+
+.TableElement {
+	border: 1px solid gray;
+}
+
+.TableRecordElement {
+	/* To stop LSP complains */
+	user-select: all; 
+}
+
+.TableCellElement {
+	border: 1px solid black;
 }

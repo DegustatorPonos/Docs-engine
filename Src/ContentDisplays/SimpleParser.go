@@ -39,7 +39,7 @@ func SimpleParse(writer http.ResponseWriter, request *http.Request) {
 		}
 		if(SetMode(prevString, &outp, "", &globalMode)) {
 			if(bufMode != globalMode) {
-				fmt.Printf("Difference between %v and %v\n", globalMode, bufMode)
+				// fmt.Printf("Difference between %v and %v\n", globalMode, bufMode)
 				if(bufMode != -1) {
 					fmt.Fprint(writer, TagsDict[bufMode].closingTag) // Closing last section
 				}
@@ -50,5 +50,5 @@ func SimpleParse(writer http.ResponseWriter, request *http.Request) {
 			fmt.Fprint(writer, TransformString((string)(outp), globalMode, false, false))
 		}
 	}
-	fmt.Println("Done")
+	// fmt.Println("Done")
 }
