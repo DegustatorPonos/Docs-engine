@@ -6,11 +6,9 @@
   
 }
 
-
 .HatVisualOverride{ 
   
 }
-
 
 .MainAlignerOverride {
   
@@ -37,6 +35,7 @@
 }
 
 .QuoteElementOverride {
+
 }
 
 .HeadTextOverride {
@@ -44,9 +43,25 @@
 }
 
 .FileElementOverride {
-
 }
+
 
 .DirectoryElementOverride {
   
+}
+
+.TableElement {
+
+}
+
+.TableRecordElement {
+
+}
+
+.TableCellElement {
+
+}
+
+.TableHeaderCellElement {
+
 }

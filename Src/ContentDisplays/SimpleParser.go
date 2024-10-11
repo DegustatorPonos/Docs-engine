@@ -47,7 +47,7 @@ func SimpleParse(writer http.ResponseWriter, request *http.Request) {
 				bufMode = globalMode
 			}
 			// fmt.Println(globalMode)
-			fmt.Fprint(writer, TransformString((string)(outp), globalMode, false, false))
+			fmt.Fprint(writer, TransformString((string)(outp), globalMode))
 		}
 	}
 	// fmt.Println("Done")

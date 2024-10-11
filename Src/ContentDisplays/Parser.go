@@ -1,7 +1,6 @@
 package parser
 
 import (
-	"fmt"
 	"slices"
 	"strings"
 )
@@ -26,6 +25,7 @@ const (
 	TableGeneral int = 10
 	TableRecord int = 11
 	TableCell int = 12
+	TableHeaderCell int = 13
 )
 
 // A dictionary of opening and closing tags of elements
@@ -44,9 +44,10 @@ func InitializeDict() {
 	TagsDict[SepLine] = Chunk{"<hr>", ""}
 	TagsDict[Quote] = Chunk{"<div class=\"QuoteElement QuoteElementOverride\">", "</div>"}
 	// Table elements 
-	TagsDict[TableGeneral] = Chunk{"<table class=\"TableElement TableElementOverride\">", "</table>"} // TODO: add style classes
+	TagsDict[TableGeneral] = Chunk{"<table class=\"TableElement TableElementOverride\">", "</table>"} 
 	TagsDict[TableRecord] = Chunk{"<tr class=\"TableRecordElement TableRecordElementOverride\">", "</tr>"}
 	TagsDict[TableCell] = Chunk{"<td class=\"TableCellElement TableCellElementOverride\">", "</td>"}
+	TagsDict[TableHeaderCell] = Chunk{"<td class=\"TableHeaderCellElement TableHeaderCellElementOverride\">", "</td>"}
 }
 
 // Checks wheather it is secure to read this file or not
@@ -58,7 +59,7 @@ func isPathSecure(path string) bool {
 }
 
 // Gets the string HTML tags and transforms spectial sumbols to HTML equivalents
-func TransformString(input string, globalTag int, includeClosingTag bool, includeOpeningTag bool) string {
+func TransformString(input string, globalTag int) string {
 	if(len(input) == 0) {
 		return "<br>"
 	}
@@ -69,16 +70,9 @@ func TransformString(input string, globalTag int, includeClosingTag bool, includ
 	if(globalTag == TableGeneral) {
 		return StringToTableRecord(correctedInput)
 	}
-	modeTags := TagsDict[globalTag]
 	outp := ""
-	if (includeOpeningTag) {
-		outp += modeTags.openingTag
-	}
 	outp += correctedInput
 	outp += "<br>"
-	if (includeClosingTag) {
-	// 	outp += modeTags.closingTag
-	}
 	return outp
 }
 
@@ -207,22 +201,4 @@ func CheckForTable(currentString **string, contextMode *int) bool {
 		}
 	}
 	return false
-}
-
-// Parses the string by '|' symbols and transforms it as HTML
-// table record (<tr>)
-func StringToTableRecord(rawString string) string {
-	var builder strings.Builder
-	builder.WriteString(TagsDict[TableRecord].openingTag)
-	for i, cell := range strings.Split(rawString, "|") {
-		if(len(cell) == 0) {
-			continue
-		}
-		builder.WriteString(TagsDict[TableCell].openingTag)
-		fmt.Println(i, " - '", cell, "' - ", len(cell) )
-		builder.WriteString(cell)
-		builder.WriteString(TagsDict[TableCell].closingTag)
-	}
-	builder.WriteString(TagsDict[TableRecord].closingTag)
-	return builder.String()
 }

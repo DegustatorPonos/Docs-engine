@@ -17,6 +17,6 @@ code with <br> an html tag
 wdafsreh
 ```
 
-|table|element|
-|-----|---|
-|dawdw|dwaddv|
+|table|header|element|
+|-----|---|--|
+|table|body|element|

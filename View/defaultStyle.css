@@ -46,7 +46,11 @@
 }
 
 .TableElement {
-	border: 1px solid gray;
+	/* border: 1px solid gray; */
+	margin: 0;
+	padding: 0;
+	border-collapse: collapse;
+	min-width: 80%;
 }
 
 .TableRecordElement {
@@ -56,4 +60,11 @@
 
 .TableCellElement {
 	border: 1px solid black;
+	padding: 2px;
+}
+
+.TableHeaderCellElement {
+	border: 1px solid black;
+	padding: 2px;
+	font-weight: bold;
 }
