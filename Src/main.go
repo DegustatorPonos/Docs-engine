@@ -12,6 +12,8 @@ import (
 )
 
 func main() {
+	// parser.Test() // <- Test the stack
+
 	// Parsing a config file
 	config.ReadConfigFile()
 	fmt.Println("Listener opened on port " + config.GetPort("5000"))
