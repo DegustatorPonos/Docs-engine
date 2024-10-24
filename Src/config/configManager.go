@@ -29,7 +29,7 @@ func EnsureConfigFileCreated() {
 		if err != nil {
 			fmt.Println("Error while creating config file")
 		}
-		fmt.Fprint(file, "Port: 5000\nParsingMode: 0\nSource: ../Content/")
+		fmt.Fprint(file, "Port: 5000\nParsingMode: 0\nSource: ../Content/\nAppname: Paketik docs engine\n")
 	}
 }
 
@@ -65,7 +65,7 @@ func GetSourceDirectoryPath(defaultPath string) string {
 	return GetConfigParam("Source", defaultPath)
 }
 
-// Returns teh name of the app
+// Returns the name of the app
 func GetAppName(defaultPath string) string {
 	return GetConfigParam("Appname", defaultPath)
 }

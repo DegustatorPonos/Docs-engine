@@ -12,7 +12,7 @@ import (
 )
 
 func main() {
-	// parser.Test() // <- Test the stack
+	parser.Test() // <- Test the stack
 
 	// Parsing a config file
 	config.ReadConfigFile()

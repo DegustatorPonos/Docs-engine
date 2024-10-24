@@ -79,7 +79,7 @@ func TransformString(input string, globalTag int) string {
 // =============================== Mode changes =============================== 
 
 // Sets the mode to the current one and modifies the string if needed. Returns true if we need to incude this line
-func SetMode(previousString string, currentString *string, nextString string, contextMode *int) bool {
+func SetMode_legacy(previousString string, currentString *string, nextString string, contextMode *int) bool {
 	// Checking for the comment
 	if(CheckForCommentBlock(*currentString)) {
 		return false
@@ -108,6 +108,15 @@ func SetMode(previousString string, currentString *string, nextString string, co
 	return true
 }
 
+// Modifies stack according to the current string. Returns true if the string must be included. 
+func SetMode(previousString string, currentString *string, nextSeting string, modeStack *ModeStackNode) bool {
+
+	if(CheckForCommentBlock(*currentString)) {
+		return false
+	}
+
+	return true
+}
 // By specs the code block is defined by tripple backticks (```) that are not included.
 // This function sets the mode value and returns true if the line is a code block identifier
 func CheckForCodeBlock(currentString string, contextMode *int) bool {

@@ -27,8 +27,10 @@ func SimpleParse(writer http.ResponseWriter, request *http.Request) {
 	// File parsing
 
 	// The type of content the string represents
-	var globalMode int = Text 
-	var bufMode int = -1 // Set it to -1 so the first opening tag will be open
+	// var globalMode int = Text 
+	var modeStack ModeStackNode = ModeStackNode{}
+	// var bufMode int = -1 // Set it to -1 so the first opening tag will be open
+	var modeStackDepthBuf int = 0 // The buffer used to detect changes in stack
 
 	// Going through the file's strings
 	for index, el := range FileStrings {
@@ -37,17 +39,11 @@ func SimpleParse(writer http.ResponseWriter, request *http.Request) {
 		if(index == -1) { // It doesnt build without it
 			continue;
 		}
-		if(SetMode(prevString, &outp, "", &globalMode)) {
-			if(bufMode != globalMode) {
-				// fmt.Printf("Difference between %v and %v\n", globalMode, bufMode)
-				if(bufMode != -1) {
-					fmt.Fprint(writer, TagsDict[bufMode].closingTag) // Closing last section
-				}
-				fmt.Fprint(writer, TagsDict[globalMode].openingTag) // Opening new tag
-				bufMode = globalMode
+		if(SetMode(prevString, &outp, "", &modeStack)) {
+			if(modeStack.depth != modeStackDepthBuf) {
+				modeStackDepthBuf = modeStack.depth
 			}
-			// fmt.Println(globalMode)
-			fmt.Fprint(writer, TransformString((string)(outp), globalMode))
+			fmt.Fprint(writer, TransformString(outp, modeStack.mode))
 		}
 	}
 	// fmt.Println("Done")
