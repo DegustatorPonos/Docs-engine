@@ -52,6 +52,21 @@ func (baseNode *ModeStackNode) Slice(depth int) []ModeStackNode {
 	return outp
 }
 
+// Returns a new stack identical to a given one
+func (baseNode *ModeStackNode) Clone() ModeStackNode {
+	var outp ModeStackNode = ModeStackNode{}
+	var modeSlice = baseNode.Slice(baseNode.depth + 1)
+	for i := range modeSlice {
+		var mode int = modeSlice[len(modeSlice) - i - 1].mode
+		if(i == 0) {
+			outp.mode = mode
+			continue
+		}
+		outp = outp.Push(mode)
+	}
+	return outp
+}
+
 // Returns true if the content of a stack is equal
 func (baseNode *ModeStackNode) EqualsTo(anotherNode ModeStackNode, checkDepth ...int) bool {
 	// The simplest ones to check
@@ -70,10 +85,25 @@ func (baseNode *ModeStackNode) EqualsTo(anotherNode ModeStackNode, checkDepth ..
 	return true
 }
 
-// Returns the biggest difference between stacks as a slice
-func (baseNode *ModeStackNode) CalculateBiggestDifference (anotherNode ModeStackNode) []ModeStackNode {
-	// TODO
-	return nil
+// Returns the biggest difference between stacks 
+// The first array represents the elements that have to be pulled from the first stack so that there is no difference since the deepest node
+// The second array represents the elements that have to be pulled from the first stack so that there is no difference since the deepest node
+// Returns (nil, nil) if there is no difference between stacks
+func (baseNode *ModeStackNode) CalculateBiggestDifference (anotherNode ModeStackNode) ([]ModeStackNode, []ModeStackNode) {
+	var len int = baseNode.depth 
+	if(len > anotherNode.depth) {
+		len = anotherNode.depth
+	}
+	var currentNodeSlice = baseNode.Slice(baseNode.depth + 1)
+	var anotherNodeSlice = anotherNode.Slice(anotherNode.depth + 1)
+	for i := range len {
+		var currentNodeSliceIndex = baseNode.depth - i
+		var anotherNodeSliceIndex = anotherNode.depth - i
+		if(currentNodeSlice[currentNodeSliceIndex].mode != anotherNodeSlice[anotherNodeSliceIndex].mode) {
+			return baseNode.Slice(currentNodeSliceIndex + 1), anotherNode.Slice(anotherNodeSliceIndex + 1)
+		}
+	}
+	return nil, nil
 }
 
 func (baseNode ModeStackNode) String() string {
@@ -95,9 +125,20 @@ func Test() {
 	var node1 ModeStackNode
 	node1.mode = 1
 	node1 = node1.Push(2)
-	node1 = node1.Push(3)
+	node1 = node1.Push(5)
 	node1 = node1.Push(4)
 	fmt.Printf("Are the stacks equal: %v\n", node.EqualsTo(node1))
+
+	// Dif calculating test
+	var dif, dif1 = node.CalculateBiggestDifference(node1)
+	TEMP_printSlice(dif)
+	TEMP_printSlice(dif1)
+
+	// Clone test
+	var clone = node.Clone()
+	fmt.Println("The clones are identical:", node.EqualsTo(clone))
+
+	fmt.Println("===========================")
 }
 
 func TEMP_printSlice (slice []ModeStackNode) {
