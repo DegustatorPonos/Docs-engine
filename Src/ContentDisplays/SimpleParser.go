@@ -25,26 +25,41 @@ func SimpleParse(writer http.ResponseWriter, request *http.Request) {
 	FileStrings := strings.Split(string(content), "\n")
 
 	// File parsing
-
-	// The type of content the string represents
-	// var globalMode int = Text 
 	var modeStack ModeStackNode = ModeStackNode{}
-	// var bufMode int = -1 // Set it to -1 so the first opening tag will be open
-	var modeStackDepthBuf int = 0 // The buffer used to detect changes in stack
+	var modeStackBuf ModeStackNode = ModeStackNode{}  // The buffer used to detect changes in stack
 
 	// Going through the file's strings
 	for index, el := range FileStrings {
 		var prevString = "<Null>"
 		outp := strings.Trim(strings.ReplaceAll(el, "\n", ""), " ") 
-		if(index == -1) { // It doesnt build without it
+		if(index == -1) { // It doesnt build without it. Might not be useful
 			continue;
 		}
 		if(SetMode(prevString, &outp, "", &modeStack)) {
-			if(modeStack.depth != modeStackDepthBuf) {
-				modeStackDepthBuf = modeStack.depth
+			// If there is a difference on the stack
+			if(!modeStack.EqualsTo(modeStackBuf)) {
+
+				// Closing/opening default tag
+				if(modeStackBuf.depth == 0 && index != 0) {
+					fmt.Fprint(writer, TagsDict[Text].closingTag)
+				}
+
+				// Handling difference
+				var toPull, toPush = modeStack.CalculateBiggestDifference(modeStackBuf)
+				for _, val := range toPush {
+					fmt.Fprint(writer, TagsDict[val.mode].closingTag)
+				}
+				for _, val := range toPull {
+					fmt.Fprint(writer, TagsDict[val.mode].openingTag)
+				}
+
+				if(modeStack.depth == 0) {
+					fmt.Fprint(writer, TagsDict[Text].openingTag)
+				}
+				// Eqalization of the stacks
+				modeStackBuf = modeStack.Clone()
 			}
 			fmt.Fprint(writer, TransformString(outp, modeStack.mode))
 		}
 	}
-	// fmt.Println("Done")
 }

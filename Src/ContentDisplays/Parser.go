@@ -85,21 +85,6 @@ func SetMode_legacy(previousString string, currentString *string, nextString str
 		return false
 	}
 
-	// Checking for the code block
-	if(CheckForCodeBlock(*currentString, contextMode)) {
-		return false
-	}
-
-	// Checking for the header
-	if(CheckForHeaderBlock(&currentString, nextString, contextMode)) {
-		return true
-	}
-
-	// Checking for the quote 
-	if(CheckForQuoteBlock(&currentString, contextMode)) {
-		return true
-	}
-
 	// Checking for the table
 	if(CheckForTable(&currentString, contextMode)) {
 		return true
@@ -115,16 +100,44 @@ func SetMode(previousString string, currentString *string, nextSeting string, mo
 		return false
 	}
 
+	if(CheckForQuoteBlock(&currentString, modeStack)) {
+		return true
+	}
+
+	if(CheckForHeaderBlock(&currentString, nextSeting, modeStack)) {
+		return true
+	}
+
+	if(CheckForCodeBlock(*currentString, modeStack)) {
+		return false
+	}
+
 	return true
 }
+
+// By specs quote is set by placing '>' symbol before the string
+// This function sets the mode value and returns true if the line is a quote block identifier
+func CheckForQuoteBlock(currentString **string, contextMode *ModeStackNode) bool { 
+	if(strings.HasPrefix(**currentString, "> ")) {
+		**currentString = strings.TrimLeft(**currentString, "> ")
+		*contextMode = contextMode.Push(Quote)
+		return true
+	} else {
+		if(contextMode.mode == Quote) {
+			contextMode.Pull()
+		}
+	}
+	return false
+}
+
 // By specs the code block is defined by tripple backticks (```) that are not included.
 // This function sets the mode value and returns true if the line is a code block identifier
-func CheckForCodeBlock(currentString string, contextMode *int) bool {
+func CheckForCodeBlock(currentString string, contextMode *ModeStackNode) bool {
 	if(currentString == "```") {
-		if(*contextMode != Code) {
-			*contextMode = Code
+		if(*&contextMode.mode != Code) {
+			*contextMode = contextMode.Push(Code)
 		} else {
-			*contextMode = Text
+			contextMode.Pull()
 		}
 		return true 
 	}
@@ -135,7 +148,7 @@ func CheckForCodeBlock(currentString string, contextMode *int) bool {
 // First - '#' symbols before the string. The ammount of strings is the depth. Max 6
 // Second - strings that only contains === for H1 and --- for H2. Low priority impl
 // This function sets the mode value and returns true if the line is a header block identifier
-func CheckForHeaderBlock(currentString **string, nextString string, contextMode *int) bool { 
+func CheckForHeaderBlock(currentString **string, nextString string, contextMode *ModeStackNode) bool { 
 	var builder strings.Builder
 	var depth int = 0
 	for i := range 6 {
@@ -147,31 +160,16 @@ func CheckForHeaderBlock(currentString **string, nextString string, contextMode 
 			break
 		}
 	}
+	for slices.Contains([]int{H1, H2, H3, H4, H5, H6}, contextMode.mode) {
+		contextMode.Pull() 
+	}
 	if(depth == 0) {
-		if(slices.Contains([]int{H1, H2, H3, H4, H5, H6}, *contextMode)) {
-			*contextMode = Text
-		}
 		return false
 	} else {
-		*contextMode = (H1 - 1 + depth )
+		*contextMode = contextMode.Push(H1 - 1 + depth )
 		**currentString = strings.TrimLeft(**currentString, "#")
 		return true
 	}
-}
-
-// By specs quote is set by placing '>' symbol before the string
-// This function sets the mode value and returns true if the line is a quote block identifier
-func CheckForQuoteBlock(currentString **string, contextMode *int) bool { 
-	if(strings.HasPrefix(**currentString, "> ")) {
-		**currentString = strings.TrimLeft(**currentString, "> ")
-		*contextMode = Quote
-		return true
-	} else {
-		if(*contextMode == Quote) {
-			*contextMode = Text
-		}
-	}
-	return false
 }
 
 // by specs comment is set by placing text between '<!--' and '-->' blocks

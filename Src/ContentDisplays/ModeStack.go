@@ -94,14 +94,24 @@ func (baseNode *ModeStackNode) CalculateBiggestDifference (anotherNode ModeStack
 	if(len > anotherNode.depth) {
 		len = anotherNode.depth
 	}
+	len++
 	var currentNodeSlice = baseNode.Slice(baseNode.depth + 1)
 	var anotherNodeSlice = anotherNode.Slice(anotherNode.depth + 1)
 	for i := range len {
 		var currentNodeSliceIndex = baseNode.depth - i
 		var anotherNodeSliceIndex = anotherNode.depth - i
+		// fmt.Printf("%v - %v\n", currentNodeSlice[currentNodeSliceIndex].mode, anotherNodeSlice[anotherNodeSliceIndex].mode)
 		if(currentNodeSlice[currentNodeSliceIndex].mode != anotherNodeSlice[anotherNodeSliceIndex].mode) {
 			return baseNode.Slice(currentNodeSliceIndex + 1), anotherNode.Slice(anotherNodeSliceIndex + 1)
 		}
+	}
+	// If the second stack is shorter
+	if(baseNode.depth > anotherNode.depth) {
+		return baseNode.Slice(baseNode.depth - anotherNode.depth), nil
+	}
+	// If the second stack is longer
+	if(baseNode.depth < anotherNode.depth) {
+		return nil, anotherNode.Slice(anotherNode.depth - baseNode.depth)
 	}
 	return nil, nil
 }
@@ -125,13 +135,15 @@ func Test() {
 	var node1 ModeStackNode
 	node1.mode = 1
 	node1 = node1.Push(2)
-	node1 = node1.Push(5)
-	node1 = node1.Push(4)
+	node1 = node1.Push(3)
+	node1 = node1.Push(3)
 	fmt.Printf("Are the stacks equal: %v\n", node.EqualsTo(node1))
 
 	// Dif calculating test
 	var dif, dif1 = node.CalculateBiggestDifference(node1)
+	fmt.Print("Difference in 1:")
 	TEMP_printSlice(dif)
+	fmt.Print("Difference in 2:")
 	TEMP_printSlice(dif1)
 
 	// Clone test
